@@ -1,5 +1,6 @@
 import json
 import random
+import pandas as pd
 
 import rasterio
 from pyproj import Proj
@@ -13,6 +14,13 @@ fpath_tiff = '/Users/jamesjensen/Documents/harris/q1_20/UML/Project/stac/colombi
 fpath_geojson = '/Users/jamesjensen/Documents/harris/q1_20/UML/Project/stac/colombia/borde_rural/train-borde_rural.geojson'
 
 dataset = rasterio.open(fpath_tiff)
+
+'''
+The goal of this script is to extract the pixel matrix of a single roof in a given tif file, create 
+a new tif file for the single roof, process the raster bands of the new tif file, and display each
+band with a corresponding colorbar.
+
+'''
 
 
 def write_building_footprint_to_raster(dataset, out_image, polygon, name):
@@ -85,16 +93,6 @@ def open_and_plot_tif(tif_file):
      # im3 = pyplot.imshow(tif.read(3),cmap='Blues')
      # fig.colorbar(im3, ax=axg)
 
-
-def get_zonal_stats(roof_tif_file):
-
-     for i in range(len(tif_file.colorinterp)):
-          
-          raster = tif_file.read(i+1)
-          min = raster.min()
-          max = raster.max()
-          avg = np.mean(raster)
-          med = np.median(raster)
 
 
 

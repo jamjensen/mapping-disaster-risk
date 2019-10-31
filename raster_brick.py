@@ -96,12 +96,12 @@ def display_single_roof(out_image):
 
 if __name__ == "__main__":
 
-    # prints single rooftop at random
     geojson = load_geojson(fpath_geojson)
     polygons = make_polgyons(geojson)
 
     idx = random.randint(0,len(polygons))
-    polygon = polygons[idx]
+    polygon = polygons[idx] # gets single rooftop at random
+
 
     polygon['coordinates'] = transform_coordinates(polygon['coordinates'], proj)
     out_image = get_rooftop_array_after_mask(polygon, proj, fpath_tiff)
