@@ -11,8 +11,8 @@ from rasterio.plot import show
 # you can print out the roof: 
     # %matplotlib osx
 
-fpath_tiff = 'stac/colombia/borde_rural/borde_rural_ortho-cog.tif'
-fpath_geojson = 'stac/colombia/borde_rural/train-borde_rural.geojson'
+fpath_tiff = '/Users/jamesjensen/Documents/harris/q1_20/UML/Project/stac/colombia/borde_rural/borde_rural_ortho-cog.tif'
+fpath_geojson = '/Users/jamesjensen/Documents/harris/q1_20/UML/Project/stac/colombia/borde_rural/train-borde_rural.geojson'
 
 dataset = rasterio.open(fpath_tiff)
 proj = Proj(init='epsg:32618')
@@ -34,7 +34,6 @@ def load_geojson(file_path):
 def make_polgyons(geojson):
     '''
     Given geojson dictionary returns a list of buildings mapped by their coordinates
-    I've included the n so that you can cut off the number of building footprints
     '''
 
     polygons = []
@@ -73,6 +72,10 @@ def transform_coordinates(coordinates_lists, transform):
 
 
 def get_rooftop_array_after_mask(polygon, projection, tiff_path):
+    '''
+    returns:
+        out_image (numpy array): array of pixel values for the given polygon 
+    '''
 
     with rasterio.open(tiff_path) as tiff:
         out_image, out_transform = mask(tiff, [polygon], crop=True)
