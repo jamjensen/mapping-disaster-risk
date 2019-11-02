@@ -1,6 +1,6 @@
 
 ## Rasterio 
-* [rasterio notebook](https://gist.github.com/sgillies/7e5cd548110a5b4d45ac1a1d93cb17a3)
+* [advanced rasterio -- working with cloud optimized geotiffs](https://gist.github.com/sgillies/7e5cd548110a5b4d45ac1a1d93cb17a3)
 * [reading raster files](https://automating-gis-processes.github.io/CSC18/lessons/L6/reading-raster.html)
 * [writing raster files](https://rasterio.readthedocs.io/en/stable/topics/writing.html)
 * [plotting raster files](https://rasterio.readthedocs.io/en/stable/topics/plotting.html)
