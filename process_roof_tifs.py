@@ -49,38 +49,36 @@ def get_zonal_stats_JJ_TEST(roof_tif_file):
 
 
 
-def get_zonal_stats(polygons, tif_file):
+def get_zonal_stats(polygon, tif_file):
      ''' 
-     Given a single roof tif file return the corresponding feature matrix
+     Given a single polygon and the path to the corresponding tif file,
+     calculates zonal stats for the shape outlined by the polygon and returns
+     them as a dataframe.
      '''
-     rv = pd.DataFrame()
 
-     for polygon in polygons:
-          polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], PROJ)
+     df = pd.DataFrame()
 
-          df = pd.DataFrame()
+     for i in range(1,4):
+     
+          tats = rasterstats.zonal_stats(polygon,
+               tif_file,
+               stats=['min', 'max', 'median', 'majority', 'sum'],
+               band=i)
 
-          for i in range(1,4):
-          
-               tats = rasterstats.zonal_stats(polygon,
-                    tif_file,
-                    stats=['min', 'max', 'median', 'majority', 'sum'],
-                    band=i)
+          df[i] = pd.Series(tats[0]['median'])
 
-               df[i] = pd.Series(tats[0]['median'])
+     df['roof'] = polygon['roof_material']
+     df.set_index('roof', inplace=True)
 
-          df['roof'] = polygon['roof_material']
-          df.set_index('roof', inplace=True)
-          frames = [rv, df]
-          rv = pd.concat(frames)
+     return df
 
-     return rv
 
 
 def go(limit=1):
      '''
      Returns a feature matrix where a row represents a single roof and the columns
-     represent the zonal statistic for each raster band. The limit determines the number
+     represent the zonal statistic for each raster band. The zonal stats for a given
+     polygon are calcualted by calling get_zonal_stats(). The limit determines the number
      of roofs to include in the matrix.
      '''
 
@@ -89,14 +87,9 @@ def go(limit=1):
      rv = pd.DataFrame()
 
      for i, polygon in enumerate(polygons):
-
           if i < limit:
-               file_name = polygon['bid'] + '.tif'
-               polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
-               out_image = raster_brick.get_rooftop_array_after_mask(polygon, proj, fpath_tiff)
-               raster_bands.write_building_footprint_to_raster(dataset, out_image, polygon, file_name)
-
-               df = get_zonal_stats(file_name)
+               polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], PROJ)
+               df = get_zonal_stats(polygon, fpath_tiff)
                frames = [rv, df]
                rv = pd.concat(frames)
 
