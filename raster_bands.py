@@ -14,7 +14,7 @@ from matplotlib import pyplot
 import raster_brick
 import file_names as file
 
-dataset = rasterio.open(file.fpath_tiff_t)
+dataset = rasterio.open(file.fpath_tiff)
 
 
 def write_building_footprint_to_raster(dataset, out_image, polygon, name):

@@ -1,8 +1,10 @@
+'''
+DESCRIPTION HERE
+'''
 import json
 import random
 import pandas as pd
 import numpy as np
-
 from matplotlib import pyplot
 import rasterio
 import rasterstats
@@ -11,12 +13,11 @@ from rasterio.mask import mask
 from rasterio.plot import show
 import raster_brick
 import raster_bands
+import file_names as file
 
 
-fpath_tiff = '/Users/jamesjensen/Documents/harris/q1_20/UML/Project/stac/colombia/borde_rural/borde_rural_ortho-cog.tif'
-fpath_geojson = '/Users/jamesjensen/Documents/harris/q1_20/UML/Project/stac/colombia/borde_rural/train-borde_rural.geojson'
-PROJ = Proj(init='epsg:32618')
-dataset = rasterio.open(fpath_tiff)
+proj = Proj(init=file.crs)
+dataset = rasterio.open(file.fpath_tiff_t)
 
 
 def get_zonal_stats_JJ_TEST(roof_tif_file):
@@ -82,14 +83,14 @@ def go(limit=1):
      of roofs to include in the matrix.
      '''
 
-     geojson = raster_brick.load_geojson(fpath_geojson)
+     geojson = raster_brick.load_geojson(file.fpath_geojson_t)
      polygons = raster_brick.make_polgyons(geojson)
      rv = pd.DataFrame()
 
      for i, polygon in enumerate(polygons):
           if i < limit:
-               polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], PROJ)
-               df = get_zonal_stats(polygon, fpath_tiff)
+               polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
+               df = get_zonal_stats(polygon, file.fpath_tiff_t)
                frames = [rv, df]
                rv = pd.concat(frames)
 

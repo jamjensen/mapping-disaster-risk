@@ -13,11 +13,9 @@
 * [breakdown of the types of resolution](http://gsp.humboldt.edu/OLM/Courses/GSP_216_Online/lesson3-1/resolution.html)
 * [what is a raster band and what do pixel values mean](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/raster-bands.htm)
 
-## Zonal Statistics
-* [what are they](https://pythonhosted.org/rasterstats/manual.html)
-* [how to calculate](https://automating-gis-processes.github.io/CSC18/lessons/L6/zonal-statistics.html)
-
-
 ## PCA
 
+
+## Other Helpful Resources
+* [preparing aerial imagery for crop classification](https://medium.com/datadriveninvestor/preparing-aerial-imagery-for-crop-classification-ce05d3601c68)
 

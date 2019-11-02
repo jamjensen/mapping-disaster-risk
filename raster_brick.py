@@ -135,7 +135,7 @@ def go(return_polygon_and_image=False):
     complete image.
     '''
 
-    geojson = load_geojson(file.fpath_geojson_t)
+    geojson = load_geojson(file.fpath_geojson)
     polygons = make_polygons(geojson)
 
     idx = random.randint(0,len(polygons))
@@ -143,7 +143,7 @@ def go(return_polygon_and_image=False):
 
     polygon['coordinates'] = transform_coordinates(polygon['coordinates'],
                                                    proj)
-    out_image = get_rooftop_array_after_mask(file.fpath_tiff_t, polygon, proj)
+    out_image = get_rooftop_array_after_mask(file.fpath_tiff, polygon, proj)
     
     if not return_polygon_and_image:
         display_single_roof(out_image)
