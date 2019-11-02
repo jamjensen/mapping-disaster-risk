@@ -10,7 +10,7 @@
 
 ## Understanding Geospatial Data
 * [understanding raster bands vs bricks in R](https://datacarpentry.org/r-raster-vector-geospatial/05-raster-multi-band-in-r/)
-* [breakdown of the types of resolution](http://gsp.humboldt.edu/OLM/Courses/GSP_216_Online/lesson3-1/resolution.html
+* [breakdown of the types of resolution](http://gsp.humboldt.edu/OLM/Courses/GSP_216_Online/lesson3-1/resolution.html)
 * [what is a raster band and what do pixel values mean](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/raster-bands.htm)
 
 ## PCA
