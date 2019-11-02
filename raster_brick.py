@@ -33,7 +33,9 @@ def load_geojson(file_path):
 
 def make_polgyons(geojson):
     '''
-    Given geojson dictionary returns a list of buildings mapped by their coordinates
+    Given geojson dictionary returns a list of buildings mapped by their coordinates,
+    where each building is a dictionary. The building id and and roof material are 
+    included in the building dictionary. 
     '''
 
     polygons = []
@@ -95,6 +97,9 @@ def display_single_roof(out_image):
 
 
 if __name__ == "__main__":
+
+    # This script processes and displays a single rooftop as a complete image
+    # (all raster bands)
 
     geojson = load_geojson(fpath_geojson)
     polygons = make_polgyons(geojson)

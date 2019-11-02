@@ -84,18 +84,6 @@ def open_and_plot_tif(tif_file):
 
 
 
-     # im1 = axr.imshow(tif.read(1),cmap='inferno')
-     # fig.colorbar(im1, ax=axr)
-
-     # im2 = pyplot.imshow(tif.read(2),cmap='gist_earth')
-     # fig.colorbar(im2, ax=axg)
-
-     # im3 = pyplot.imshow(tif.read(3),cmap='Blues')
-     # fig.colorbar(im3, ax=axg)
-
-
-
-
 
 if __name__ == "__main__":
 

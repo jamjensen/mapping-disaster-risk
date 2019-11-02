@@ -44,6 +44,11 @@ def get_zonal_stats(roof_tif_file):
 
 
 def go(limit=1):
+     '''
+     Returns a feature matrix where a row represents a single roof and the columns
+     represent the zonal statistic for each raster band. The limit determines the number
+     of roofs to include in the matrix.
+     '''
 
      geojson = raster_brick.load_geojson(fpath_geojson)
      polygons = raster_brick.make_polgyons(geojson)
