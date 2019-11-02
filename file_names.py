@@ -13,3 +13,4 @@ fpath_geojson_t = '/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/' \
 				  'Final Project/stac/colombia/borde_rural/train-borde_rural' \
 				  '.geojson'
 crs = 'epsg:32618'
+building_tif = 'BIGTST.tif'

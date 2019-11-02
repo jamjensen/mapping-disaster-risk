@@ -14,7 +14,6 @@ import file_names as file
 
 # Run this magic command in ipython to print out roof: %matplotlib osx
 
-dataset = rasterio.open(file.fpath_tiff_t)
 proj = Proj(init=file.crs)
 
 
@@ -110,7 +109,7 @@ def get_rooftop_array_after_mask(tiff_path, polygon, projection):
                                      performs cartographic transformations
 
     Output:
-        out_imate (numpy array): a numpy of values per pixel for each
+        out_image (numpy array): a numpy of values per pixel for each
                                  band (one per image layer)
     '''
 
@@ -128,9 +127,8 @@ def display_single_roof(out_image):
     '''
 
     show(out_image)
-        
 
-if __name__ == "__main__":
+def go(return_polygon_and_image=False):
     '''
     Script that reads a geojson and geotiff file, extracts relevant information
     for one randomly selected rooftop, and displays the single rooftop as a
@@ -146,4 +144,17 @@ if __name__ == "__main__":
     polygon['coordinates'] = transform_coordinates(polygon['coordinates'],
                                                    proj)
     out_image = get_rooftop_array_after_mask(file.fpath_tiff_t, polygon, proj)
-    display_single_roof(out_image)
+    
+    if not return_polygon_and_image:
+        display_single_roof(out_image)
+    else:
+        return polygon, out_image
+        
+
+if __name__ == "__main__":
+    '''
+    Script that reads a geojson and geotiff file, extracts relevant information
+    for one randomly selected rooftop, and displays the single rooftop as a
+    complete image.
+    '''
+    go()
