@@ -6,17 +6,18 @@ from matplotlib import pyplot as plt
 from sklearn.cluster import KMeans
 from rasterio.plot import show as s
 from skimage.io import imread, imshow
-from skimage.color import rgb2hsv
+from skimage.color import rgb2hsv, rgb2gray
 from skimage.transform import resize, rescale, rotate
 from scipy import ndimage
 import raster_brick as rb
 
-'''
+
+# Probably won't use this
 def convert_single_band_to_black_white(band_array):
     '''
     '''
 
-    # Normalize and data
+    out_image = out_image[0:3]
     flat = band_array.reshape(band_array.shape[0] * band_array.shape[1])
 
     for i in range(flat.shape[0]):
@@ -26,31 +27,46 @@ def convert_single_band_to_black_white(band_array):
             flat[i] = 0
     flat = flat.reshape(band_array.shape[0], band_array.shape[1])
     plt.imshow(flat, cmap='gray')
-'''
 
+# Probably won't use this
+def convert_to_gray(out_image):
+    '''
+    '''
+
+    out_image = out_image[0:3]
+    final = (out_image[0] * 0.299) + (out_image[1] * 0.587) + (out_image[2] * 0.144)
+    s(final, cmap='gray')
+
+
+# Working through this function
 def clustering_edges(out_image):
+    '''
+    Color Quantization, assuming we can leave out the 4th band
+    '''
 
-    # This is a version of color quantization I believe
-    # Leaving out first band for now
-    # In the future, just import out_image
+    out_image = out_image[0:3]
+
+    '''
+    Step 1) Figure out how to rotate images using rotate(out_image, angle=X)
     
-    # USE TO GIVE YOU A RANDOM IMAGE
-    #polygon, out_image = rb.go(return_polygon_and_image=True)
+    test = 0
+    for i in range(3):
+        a = np.count_nonzero(out_image[i, :, 1])
+        if a > test:
+            test = a
 
-    # SELECT 3 BANDS
-    out_image = out_image[1:4]
+    if test < 10:
+        out_image = rotate(out_image, angle=45, cval=1)
 
-    # ROTATE IMAGES - still figuring out
-    # if out_image.shape[2] > out_image.shape[1]:
-        # out_image = rotate(out_image, angle=45)
-    # rotate(image, angle=45, resize=True)
 
-    # SCALE IMAGES
-    #out_image = resize(out_image, (3, 115, 115)) # one option
-    # out_image = rescale(out_image, scale=(1))
-
+    Step 2) Figure out how to scale images correctly, or pick an arbitrary scale
     
-    # STANDARDIZE
+    out_image = resize(out_image, (3, 115, 115))
+    # OR
+    out_image = rescale(out_image, scale=(1))
+    '''
+
+    # Standardize
     normalized = out_image / 255
     vertical = normalized.reshape(out_image.shape[1] *
                                   out_image.shape[2], out_image.shape[0])
@@ -59,31 +75,11 @@ def clustering_edges(out_image):
     cluster_pic = show.reshape(out_image.shape[0],
                                out_image.shape[1], out_image.shape[2])
     
-    # Code to where I take the mean of values per band: not sure if sound
-    # Otherwise use commented out code below
-
+    # Take the most extreme values per band: not sure if sound
     show = np.min(cluster_pic, axis=0)
     s(show, cmap='gist_earth')
 
-
-    '''
-    # Code to see three bands:
-
-    fig, (axr, axg, axb) = plt.subplots(1, 3, figsize=(21,7))
-    bands = [axr, axg, axb]
-    colors = ['gist_earth', 'gist_earth', 'gist_earth']
-    mapping = dict(zip(bands, colors))
-    for i, (k, v) in enumerate(mapping.items()):
-        im = k.imshow(cluster_pic[i], cmap=v)
-        fig.colorbar(im, ax=k)
-        k.title.set_text(v)
-     
-    plt.show()
-    '''
-
-
-
-#NEXT STEPS: rotate, then flatten data into a single row so each pixel is a feature, then cluster
+    # NEXT STEPS: rotate, flatten data into a single row so each pixel is a feature, cluster
 
 
 def rotate_and_resize_image():
