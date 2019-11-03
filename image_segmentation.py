@@ -7,35 +7,10 @@ from sklearn.cluster import KMeans
 from rasterio.plot import show as s
 from skimage.io import imread, imshow
 from skimage.color import rgb2hsv, rgb2gray
-from skimage.transform import resize, rescale, rotate
+from skimage.transform import resize, rescale, rotate, AffineTransform, warp
+from skimage.util import crop
 from scipy import ndimage
 import raster_brick as rb
-
-
-# Probably won't use this
-def convert_single_band_to_black_white(band_array):
-    '''
-    '''
-
-    out_image = out_image[0:3]
-    flat = band_array.reshape(band_array.shape[0] * band_array.shape[1])
-
-    for i in range(flat.shape[0]):
-        if flat[i] > flat.mean():
-            flat[i] = 1
-        else:
-            flat[i] = 0
-    flat = flat.reshape(band_array.shape[0], band_array.shape[1])
-    plt.imshow(flat, cmap='gray')
-
-# Probably won't use this
-def convert_to_gray(out_image):
-    '''
-    '''
-
-    out_image = out_image[0:3]
-    final = (out_image[0] * 0.299) + (out_image[1] * 0.587) + (out_image[2] * 0.144)
-    s(final, cmap='gray')
 
 
 # Working through this function
@@ -57,13 +32,13 @@ def clustering_edges(out_image):
 
     if test < 10:
         out_image = rotate(out_image, angle=45, cval=1)
+    '''
 
-
+    '''
     Step 2) Figure out how to scale images correctly, or pick an arbitrary scale
-    
-    out_image = resize(out_image, (3, 115, 115))
-    # OR
+
     out_image = rescale(out_image, scale=(1))
+    out_image = resize(out_image, (3, 100, 100))
     '''
 
     # Standardize
@@ -82,10 +57,40 @@ def clustering_edges(out_image):
     # NEXT STEPS: rotate, flatten data into a single row so each pixel is a feature, cluster
 
 
-def rotate_and_resize_image():
-    '''
-    '''
+
+def rotate_and_scale():
+
     pass
+
+
+# Probably won't use this
+def convert_single_band_to_black_white(band_array):
+    '''
+    '''
+
+    out_image = out_image[0:3]
+    flat = band_array.reshape(band_array.shape[0] * band_array.shape[1])
+
+    for i in range(flat.shape[0]):
+        if flat[i] > flat.mean():
+            flat[i] = 1
+        else:
+            flat[i] = 0
+    flat = flat.reshape(band_array.shape[0], band_array.shape[1])
+    plt.imshow(flat, cmap='gray')
+
+
+
+# Probably won't use this
+def convert_to_gray(out_image):
+    '''
+    '''
+
+    out_image = out_image[0:3]
+    final = (out_image[0] * 0.299) + (out_image[1] * 0.587) + (out_image[2] * 0.144)
+    s(final, cmap='gray')
+
+
 
 
 
