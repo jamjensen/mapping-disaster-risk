@@ -11,6 +11,7 @@ import rasterio
 from pyproj import Proj
 import numpy as np
 from matplotlib import pyplot
+from rasterio.plot import show
 import raster_brick
 import file_names as file
 
