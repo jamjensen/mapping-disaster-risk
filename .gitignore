@@ -1,3 +1,7 @@
 .pyc
 .DS_Store
 __pycache__/
+.Rhistory
+.RData
+
+file_names.py
