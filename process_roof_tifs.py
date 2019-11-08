@@ -17,7 +17,7 @@ import file_names as file
 
 
 proj = Proj(init=file.crs)
-dataset = rasterio.open(file.fpath_tiff_t)
+dataset = rasterio.open(file.fpath_tiff)
 
 
 def get_zonal_stats_JJ_TEST(roof_tif_file):
