@@ -11,6 +11,46 @@ from skimage.transform import resize, rescale, rotate, AffineTransform, warp
 from skimage.util import crop
 from scipy import ndimage
 import raster_brick as rb
+import cv2
+import os
+
+
+
+# Step 1) Convert to grayscale
+def convert_to_gray(out_image):
+    '''
+    Converts from 3 layers into a single, transformed gray layer.
+    '''
+    img = cv2.imread(out_image, 0)
+
+    return img
+
+
+# Step 2) Extract center given size
+def crop_center(img, cropx, cropy):
+    '''
+    Crops center of image based on given parameters.
+    '''
+    y,x = img.shape
+    startx = x//2 - (cropx//2)
+    starty = y//2 - (cropy//2)    
+
+    return img[starty:starty + cropy, startx:startx + cropx]
+
+
+# Loop through tifs
+def loop_and_print():
+
+
+    count = 1
+    while count < 30:
+        for filename in os.listdir('/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/data/colombia_rural_tifs'):
+            img = convert_to_gray(filename)
+            crop = crop_center(img, 62, 62)
+            plt.subplot(10, 10, count), plt.imshow(crop, cmap='gray')
+            count += 1
+
+
 
 
 # Working through this function
