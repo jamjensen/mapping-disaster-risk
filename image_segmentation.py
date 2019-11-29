@@ -1,136 +1,137 @@
-import json
+'''
+NOTE: currently this only works correctly when functions are copied into
+ipython and you are in the directory with the tif images.
+
+Not entirely sure why!
+'''
 import numpy as np
 import pandas as pd
+from pyproj import Proj
 import rasterio
 from matplotlib import pyplot as plt
-from sklearn.cluster import KMeans
 from rasterio.plot import show as s
 from skimage.io import imread, imshow
-from skimage.color import rgb2hsv, rgb2gray
-from skimage.transform import resize, rescale, rotate, AffineTransform, warp
-from skimage.util import crop
-from scipy import ndimage
-import raster_brick as rb
+import raster_brick
+import raster_bands
+import file_names as f
 import cv2
 import os
 
+tif_path = f.fpath_tifs
+proj = Proj(init=f.crs)
 
 
-# Step 1) Convert to grayscale
+# Step 1) Convert to grayscale (reduces to a single layer)
 def convert_to_gray(out_image):
     '''
-    Converts from 3 layers into a single, transformed gray layer.
+    Converts image from multiple layers into a single, transformed gray
+    image using a linear transformation.
+
+    Input:
+        out_image (tif): a geotif file for a single roof
+
+    Output:
+        img (numpy array): a 1 dimensional numpy array
     '''
     img = cv2.imread(out_image, 0)
 
     return img
 
 
-# Step 2) Extract center given size
+# Step 2) Extract center given specified size (eg. 60 x 60)
 def crop_center(img, cropx, cropy):
     '''
-    Crops center of image based on given parameters.
+    Crops an image down to it's center given a specified size.
+
+    Inputs:
+        img (numpy array): numpy array representing an image
+        cropx (int): specified number of rows
+        cropy (int): specified number of columns
+
+    Output:
+        img (numpy array): a reduced size numpy array
     '''
-    y,x = img.shape
+    y, x = img.shape
     startx = x//2 - (cropx//2)
     starty = y//2 - (cropy//2)    
+    endx = startx + cropx
+    endy = starty + cropy
 
-    return img[starty:starty + cropy, startx:startx + cropx]
-
-
-# Loop through tifs
-def loop_and_print():
+    return img[starty:endy, startx:endx]
 
 
-    count = 1
-    while count < 30:
-        for filename in os.listdir('/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/data/colombia_rural_tifs'):
-            img = convert_to_gray(filename)
-            crop = crop_center(img, 62, 62)
-            plt.subplot(10, 10, count), plt.imshow(crop, cmap='gray')
+# Step 3) Loop through tifs and print processed images as a grid to inspect
+def loop_and_print(how_many, grid_rows, grid_cols):
+    '''
+    Loops through tif files, converts to grayscale, crops to 60x60, and
+    outputs the images of each of the tifs. Drops any tifs with greater than
+    5% whitespace.
+
+    Inputs:
+        how_many (int): number of images to loop through
+        grid_rows (int): number of rows in final output file
+        grid_cols (int): number of cols in final output file
+
+    Output:
+        outliers (int): number of images with >5% whitespace after processing
+    '''
+    count = 0
+    outliers = 0
+    fig = plt.figure(figsize=(grid_rows, grid_cols))
+
+    for filename in os.listdir(tif_path):
+        img = convert_to_gray(filename)
+        crop = crop_center(img, 60, 60)
+        # If percentage of zeros is less than 50, continue
+        if (np.count_nonzero(crop) / crop.size) > .90:
             count += 1
-
-
-
-
-# Working through this function
-def clustering_edges(out_image):
-    '''
-    Color Quantization, assuming we can leave out the 4th band
-    '''
-
-    out_image = out_image[0:3]
-
-    '''
-    Step 1) Figure out how to rotate images using rotate(out_image, angle=X)
-    
-    test = 0
-    for i in range(3):
-        a = np.count_nonzero(out_image[i, :, 1])
-        if a > test:
-            test = a
-
-    if test < 10:
-        out_image = rotate(out_image, angle=45, cval=1)
-    '''
-
-    '''
-    Step 2) Figure out how to scale images correctly, or pick an arbitrary scale
-
-    out_image = rescale(out_image, scale=(1))
-    out_image = resize(out_image, (3, 100, 100))
-    '''
-
-    # Standardize
-    normalized = out_image / 255
-    vertical = normalized.reshape(out_image.shape[1] *
-                                  out_image.shape[2], out_image.shape[0])
-    kmeans = KMeans(n_clusters=10, random_state=0).fit(vertical)
-    show = kmeans.cluster_centers_[kmeans.labels_]
-    cluster_pic = show.reshape(out_image.shape[0],
-                               out_image.shape[1], out_image.shape[2])
-    
-    # Take the most extreme values per band: not sure if sound
-    show = np.min(cluster_pic, axis=0)
-    s(show, cmap='gist_earth')
-
-    # NEXT STEPS: rotate, flatten data into a single row so each pixel is a feature, cluster
-
-
-
-def rotate_and_scale():
-
-    pass
-
-
-# Probably won't use this
-def convert_single_band_to_black_white(band_array):
-    '''
-    '''
-
-    out_image = out_image[0:3]
-    flat = band_array.reshape(band_array.shape[0] * band_array.shape[1])
-
-    for i in range(flat.shape[0]):
-        if flat[i] > flat.mean():
-            flat[i] = 1
+            fig.add_subplot(10, 10, count)
+            plt.imshow(crop)
         else:
-            flat[i] = 0
-    flat = flat.reshape(band_array.shape[0], band_array.shape[1])
-    plt.imshow(flat, cmap='gray')
+            outliers += 1
+        if count >= how_many:
+            continue
+    
+    return outliers
 
 
-
-# Probably won't use this
-def convert_to_gray(out_image):
+# Step 4) Loop through all tiffs, process, and include in a dataframe
+def go(limit=1):
     '''
+
     '''
+    tif = f.fpath_tiff
+    geojson = raster_brick.load_geojson(f.fpath_geojson)
+    polygons = raster_brick.make_polygons(geojson)
 
-    out_image = out_image[0:3]
-    final = (out_image[0] * 0.299) + (out_image[1] * 0.587) + (out_image[2] * 0.144)
-    s(final, cmap='gray')
+    count = 0
+    outliers = 0
+    label = []
+    features = []
 
+    for i, polygon in enumerate(polygons):
+        if i < limit:
+            polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
+            img = raster_brick.get_rooftop_array_after_mask(f.fpath_tiff, polygon)
+            # Convert to gray
+            gray = (img[0] * 0.299) + (img[1] * 0.587) + (img[2] * 0.144)
+            # Crop image down
+            crop = crop_center(gray, 60, 60)
+            if (np.count_nonzero(crop) / crop.size) > .90:
+                count += 1
+                # Flatten
+                flat = crop.flatten()
+                label.append(polygon['roof_material'])
+                features.append(flat)
+            else:
+                outliers += 1
+    df = pd.DataFrame(features, label)
+    
+    return df, outliers
 
+# Step 5) Save to CSV
+def save_df_as_csv(file_name, limit=1):
 
-
+    df, outliers = go(limit=limit)
+    df.to_csv(file_name)
 
