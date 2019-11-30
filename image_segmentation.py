@@ -17,7 +17,7 @@ import file_names as f
 import cv2
 import os
 
-tif_path = f.fpath_tifs
+tif_path = f.fpath_tiff
 proj = Proj(init=f.crs)
 
 
@@ -112,7 +112,7 @@ def go(limit=1):
     for i, polygon in enumerate(polygons):
         if i < limit:
             polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
-            img = raster_brick.get_rooftop_array_after_mask(f.fpath_tiff, polygon)
+            img = raster_brick.get_rooftop_array_after_mask(f.fpath_tiff, polygon, proj)
             # Convert to gray
             gray = (img[0] * 0.299) + (img[1] * 0.587) + (img[2] * 0.144)
             # Crop image down
