@@ -21,6 +21,11 @@ proj = Proj(init=file.crs)
 dataset = rasterio.open(file.fpath_tiff)
 
 
+
+
+
+
+
 def get_zonal_stats_JJ_TEST(roof_tif_file):
      ''' 
      Given a single roof tif file return the corresponding feature matrix
