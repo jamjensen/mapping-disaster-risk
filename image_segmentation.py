@@ -112,11 +112,11 @@ def go(limit=1):
     for i, polygon in enumerate(polygons):
         if i < limit:
             polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
-            img = raster_brick.get_rooftop_array_after_mask(f.fpath_tiff, polygon)
+            img = raster_brick.get_rooftop_array_after_mask(tif, polygon)
             # Convert to gray
             gray = (img[0] * 0.299) + (img[1] * 0.587) + (img[2] * 0.144)
             # Crop image down
-            crop = crop_center(gray, 60, 60)
+            crop = crop_center(gray, 50, 50)
             if (np.count_nonzero(crop) / crop.size) > .90:
                 count += 1
                 # Flatten
