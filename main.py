@@ -58,9 +58,9 @@ def go(args):
                 label.append(polygon['roof_material'])
                 features.append(flat)
                 df = pd.DataFrame(features, label)
+                print(df)
 
-            frames = [rv, df]
-            rv = pd.concat(frames)
+            rv = pd.concat([rv, df])
     
     print(rv)
     rv.to_csv('TEST.csv')
