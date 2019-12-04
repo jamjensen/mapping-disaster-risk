@@ -35,8 +35,10 @@ def go(args):
             if args.grayscale:
                 img = (img[0] * 0.299) + (img[1] * 0.587) + (img[2] * 0.144)
             # Crop image down
-            if args.crop:
+            if args.crop_single:
                 img = image_segmentation.crop_center(img, args.pixels, args.pixels)
+            if args.crop_multiple:
+                img = image_segmentation.crop_multi_bands(img, args.pixels, args.pixels)
             if (np.count_nonzero(img) / img.size) < .90:
                 outliers += 1
                 continue
@@ -49,7 +51,7 @@ def go(args):
                 if args.grayscale:
                     df[0] = pd.Series(np.median(img))
                 else:
-                    for i in range(4):
+                    for i in range(img.shape[0]):
                         df[i] = pd.Series(np.median(img[i]))
                 df['roof'] = polygon['roof_material']
             if args.flatten:
@@ -74,7 +76,8 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='processing dem roofs')
 
     argparser.add_argument('--grayscale', action='store_true', help='converting tif to grayscale')
-    argparser.add_argument('--crop', action='store_true', help='crop roof')
+    argparser.add_argument('--crop_single', action='store_true', help='crop single raster layer')
+    argparser.add_argument('--crop_multiple', action='store_true', help='crop raster brick')
     argparser.add_argument('-p', '--pixels', type=int, default=60, help='The number of pixels to crop')
     argparser.add_argument('--flatten', action='store_true', help='Flatten matrix')
     argparser.add_argument('--zonal', action='store_true', help='calculate zonal statistics')
