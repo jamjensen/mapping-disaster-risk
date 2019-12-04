@@ -111,9 +111,13 @@ def get_rooftop_array_after_mask(tiff_path, polygon):
     '''
 
     with rasterio.open(tiff_path) as tiff:
-        out_image, out_transform = mask(tiff, [polygon], crop=True)
-
-    return out_image
+        try:
+            out_image, out_transform = mask(tiff, [polygon], crop=True)
+        except Exception as e:
+             print(e)
+             print("****************************")
+        else:
+            return out_image
     
 def display_single_roof(out_image):
     '''
