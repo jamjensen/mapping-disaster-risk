@@ -80,6 +80,7 @@ if __name__ == "__main__":
     argparser.add_argument('--zonal', action='store_true', help='calculate zonal statistics')
     argparser.add_argument('--fourier', action='store_true', help='conduct fourier transformation')
     argparser.add_argument('-l', '--limit', type=int, default=1, help='Set limit to number of roofs')
+    argparser.add_argument('-c', '--csv', action='store', dest='csv', help='Name of the stored csv')
 
     args = argparser.parse_args()
 
