@@ -47,10 +47,10 @@ def go(args):
             if args.zonal:
                 df = pd.DataFrame()
                 if args.grayscale:
-                    df[0] = np.median(img)
+                    df[0] = pd.Series(np.median(img))
                 else:
                     for i in range(4):
-                        df[i] = np.median(img[i])
+                        df[i] = pd.Series(np.median(img[i]))
                 df['roof'] = polygon['roof_material']
             if args.flatten:
                 label = []
