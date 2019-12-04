@@ -23,8 +23,7 @@ def go(args):
 
     count = 0
     outliers = 0
-    label = []
-    features = []
+
 
     for i, polygon in enumerate(polygons):
         if i < args.limit:
@@ -54,6 +53,8 @@ def go(args):
                         df[i] = np.median(img[i])
                 df['roof'] = polygon['roof_material']
             if args.flatten:
+                label = []
+                features = []
                 flat = img.flatten()
                 label.append(polygon['roof_material'])
                 features.append(flat)
