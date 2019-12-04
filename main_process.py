@@ -59,7 +59,7 @@ def go(args):
                 label.append(polygon['roof_material'])
                 features.append(flat)
                 df = pd.DataFrame(features, label)
-                print(df)
+                #print(df)
 
             rv = pd.concat([rv, df])
     
