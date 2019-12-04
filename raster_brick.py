@@ -91,10 +91,9 @@ def transform_coordinates(coordinates_lists, transform):
     
     return transformed_coordinates_lists
 
-def get_rooftop_array_after_mask(tiff_path, polygon, projection):
+def get_rooftop_array_after_mask(tiff_path, polygon):
     '''
-    Given a dictionary containing transformed coordinates for one roof and a
-    initialized Proj class instance to perform cartographic transformations,
+    Given a dictionary containing transformed coordinates for one roof,
     returns an array of arrays, each one providing a numeric value for each
     pixel in the image for a specific band (in this case, 4 matrices for 4
     bands).
@@ -105,8 +104,6 @@ def get_rooftop_array_after_mask(tiff_path, polygon, projection):
         tiff_path (str): path to the tif file
         polygon (dict): a dictionary of features including coordinates for a
                         single building
-        projection (class instance): an initialized Proj class instance that
-                                     performs cartographic transformations
 
     Output:
         out_image (numpy array): a numpy of values per pixel for each
@@ -143,7 +140,7 @@ def go(return_polygon_and_image=False):
 
     polygon['coordinates'] = transform_coordinates(polygon['coordinates'],
                                                    proj)
-    out_image = get_rooftop_array_after_mask(file.fpath_tiff, polygon, proj)
+    out_image = get_rooftop_array_after_mask(file.fpath_tiff, polygon)
     
     if not return_polygon_and_image:
         display_single_roof(out_image)
