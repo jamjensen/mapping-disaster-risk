@@ -64,7 +64,7 @@ def go(args):
             rv = pd.concat([rv, df])
     
     #print(rv)
-    rv.to_csv('data/4kroofs.csv')
+    rv.to_csv(args.csv)
     #return rv
 
 
