@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import cv2
 from matplotlib import pyplot as plt
+from pyproj import Proj
 import image_segmentation
 import raster_brick
 import raster_bands
