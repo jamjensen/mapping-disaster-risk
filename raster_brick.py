@@ -91,7 +91,7 @@ def transform_coordinates(coordinates_lists, transform):
     
     return transformed_coordinates_lists
 
-def get_rooftop_array_after_mask(tiff_path, polygon):
+def get_rooftop_array_after_mask(tiff_path, polygon, projection):
     '''
     Given a dictionary containing transformed coordinates for one roof,
     returns an array of arrays, each one providing a numeric value for each
@@ -144,7 +144,7 @@ def go(return_polygon_and_image=False):
 
     polygon['coordinates'] = transform_coordinates(polygon['coordinates'],
                                                    proj)
-    out_image = get_rooftop_array_after_mask(file.fpath_tiff, polygon)
+    out_image = get_rooftop_array_after_mask(file.fpath_tiff, polygon, proj)
     
     if not return_polygon_and_image:
         display_single_roof(out_image)
