@@ -38,6 +38,7 @@ def convert_to_gray(out_image):
     return img
 
 
+
 # Step 2) Extract center given specified size (eg. 60 x 60)
 def crop_center(img, cropx, cropy):
     '''
