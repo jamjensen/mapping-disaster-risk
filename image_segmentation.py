@@ -61,6 +61,16 @@ def crop_center(img, cropx, cropy):
     return img[starty:endy, startx:endx]
 
 
+def crop_multi_bands(brick, cropx, cropy):
+
+    c,y,x = brick.shape
+    startx = x//2 - cropx//2
+    starty = y//2 - cropy//2    
+    
+    return brick[:3, starty:starty+cropy, startx:startx+cropx]
+
+
+
 # Step 3) Loop through tifs and print processed images as a grid to inspect
 def loop_and_print(how_many, grid_rows, grid_cols):
     '''
