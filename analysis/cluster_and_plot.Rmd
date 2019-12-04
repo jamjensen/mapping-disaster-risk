@@ -1,0 +1,130 @@
+---
+title: "Clustering Based on Zonal Statistics"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, warning=FALSE, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(factoextra)
+library(readr)
+library(clustertend)
+library(psych)
+library(fpc)
+library(dbscan)
+library(gridExtra)
+library(seriation)
+library(dendextend)
+```
+
+```{r kmeans, message=FALSE, warning=FALSE}
+run_kmeans <- function(file, clusters) {
+  ###This function runs the entire k-means algorithm ###
+  
+  # Read CSV
+  roof_matrix <- read_csv(file)
+  # Rename first column if necesary
+  if (colnames(roof_matrix)[1] != "roof") {
+  roof_matrix <- roof_matrix %>% rename(roof = X1)
+  }
+  # Scale and find covariance matrix
+  roof_scaled <- roof_matrix %>% select(-roof) %>%
+                                 scale()
+  dist_can <- roof_scaled %>% dist(method="canberra")
+  # Plot ODI
+  title1 <- paste("ODI:", basename(file), sep=" ")
+  viz <- fviz_dist(dist_can,
+                   show_labels = FALSE,
+                   gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07")) +
+                   ggtitle(title1)
+  plot(viz)
+  
+  # K-means
+  k2 <- kmeans(roof_scaled, centers=clusters, nstart = 15)
+  output <- roof_matrix %>% select(roof)
+  output$K_Cluster <- as.factor(k2$cluster)
+  k_title <- paste("K = ", clusters, sep="")
+  title2 <- paste(k_title, basename(file), sep=" ")
+  group <- fviz_cluster(k2, geom = "point", data = roof_scaled) +
+           ggtitle(title2)
+  plot(group)
+  
+  # Comparison to actual labels
+  grouped <- aggregate(output,
+                       by=list(output$roof, output$K_Cluster),
+                       FUN=length)
+  colnames(grouped)[colnames(grouped)=="Group.2"] <- "Cluster"
+  actual_label_count <-table(roof_matrix$roof)
+  title3 <- paste("Comparison to actual labels:", basename(file), sep=" ")
+  bar <- ggplot(grouped, aes(fill=Cluster, y=K_Cluster, x=Group.1)) + 
+                geom_bar(position="dodge", stat="identity") +
+                xlab("Roof Material") +
+                ylab("Count") +
+                ggtitle(title3)
+  plot(bar)
+}
+```
+
+```{r warning=FALSE, message=FALSE}
+run_hac <- function(file, clusters, distance, method) {
+  ###This function runs the entire factor analysis algorithm ###
+  
+  # Read CSV
+  roof_matrix <- read_csv(file)
+  # Rename first column if necesary
+  if (colnames(roof_matrix)[1] != "roof") {
+  roof_matrix <- roof_matrix %>% rename(roof = X1)
+  }
+  
+  # Scale
+  roof_scaled <- roof_matrix %>% select(-roof) %>%
+                                 scale() %>%
+                                 dist(method=distance)
+  hc_complete <- hclust(roof_scaled, method=method)
+  title5 <- paste("HAC:", basename(file), sep=" ")
+  plot(hc_complete %>%
+       as.dendrogram %>%
+       set("branches_k_color", k=clusters),
+       leaflab="none",
+       main = title5)
+  
+  # Cut the tree at k=5
+  cut <- cutree(hc_complete, k=clusters)
+  output <- roof_matrix %>% select(roof)
+  output$K_Cluster <- as.factor(cut)
+  grouped <- aggregate(output,
+                       by=list(output$roof, output$K_Cluster),
+                       FUN=length)
+  colnames(grouped)[colnames(grouped)=="Group.2"] <- "Cluster"
+  actual_label_count <-table(roof_matrix$roof)
+  title3 <- paste("HAC Comparison to Actual Labels:", basename(file), sep=" ")
+  bar <- ggplot(grouped, aes(fill=Cluster, y=K_Cluster, x=Group.1)) + 
+                geom_bar(position="dodge", stat="identity") +
+                xlab("Roof Material") +
+                ylab("Count") +
+                ggtitle(title3)
+  plot(bar)
+}
+```
+
+
+```{r run_kmeans, message=FALSE, warning=FALSE}
+path <- '/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/data'
+files <- list.files(path=path, pattern="*.csv", full.names=TRUE, recursive=FALSE)
+
+for (f in files) {
+  run_kmeans(f, 5)
+}
+```
+
+```{r run_factoranalysis, message=FALSE, warning=FALSE}
+for (f in files) {
+  run_hac(f, 5, distance="canberra", method="complete")
+}
+```
+
