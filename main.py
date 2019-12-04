@@ -61,8 +61,9 @@ def go(args):
             frames = [rv, df]
             rv = pd.concat(frames)
     
-    #print(rv)
-    return rv
+    print(rv)
+    rv.to_csv('TEST.csv')
+    #return rv
 
 
 
