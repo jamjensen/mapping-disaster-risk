@@ -33,14 +33,7 @@ roof_matrix <- select(roof_matrix,-c(X1))
 if (colnames(roof_matrix)[1] != "roof") {
 roof_matrix <- roof_matrix %>% rename(roof = X1)
 }
-
-# Read CSV
-roof_matrix <- read_csv(file)
-# Rename first column if necesary
-if (colnames(roof_matrix)[1] != "roof") {
-roof_matrix <- roof_matrix %>% rename(roof = X1)
-}
-
+roof_matrix <- roof_matrix[complete.cases(roof_matrix), ]
 ```
 
 ```{r kmeans, message=FALSE, warning=FALSE}
@@ -130,6 +123,24 @@ run_hac <- function(roof_matrix, clusters, distance, method) {
 }
 ```
 
+```{r DBSCAN, message=FALSE, warning=FALSE}
+run_DBSCAN <- function(roof, eps, minpts, file) {
+  
+  d <- dbscan(roof, eps=eps, Minpts=minpts)
+  print(d)
+}
+```
+
+```{r}
+# First define eps
+roof <- roof_matrix %>% select(-roof) %>%
+                        scale()
+# Determine best eps
+kNNdistplot(roof, k=3)
+# Note: MinPts = k above
+run_DBSCAN(roof, eps=55, MinPts=100, "mixco_1_and_ebenezer_gcf")
+```
+
 ```{r k-medoids, message=FALSE, warning=FALSE}
 
 run_PAM <- function(roof_matrix, clusters, name) {
@@ -164,8 +175,14 @@ for (f in files) {
   run_kmeans(f, 5)
 }
 
-run_kmeans(roof_matrix, 4, "zonal_test")
+run_kmeans(roof_matrix, 4, "mixco_1_and_ebenezer_gcf")
 ```
+
+```{r}
+run_kmeans(roof_matrix, 2, "mixco_1_and_ebenezer_gcf")
+```
+
+
 
 ```{r run_factoranalysis, message=FALSE, warning=FALSE}
 for (f in files) {
