@@ -130,6 +130,31 @@ run_hac <- function(roof_matrix, clusters, distance, method) {
 }
 ```
 
+```{r k-medoids, message=FALSE, warning=FALSE}
+
+run_PAM <- function(roof_matrix, clusters, name) {
+  
+  roof_scaled <- roof_matrix %>% 
+    select(-roof) %>%
+    scale()
+  
+  PAM <- pam(roof_scaled,
+           k=clusters)
+  output <- roof_matrix %>% select(roof)
+  output$pamCluster <- as.factor(PAM$cluster)
+  grouped <- aggregate(output,
+                     by=list(output$roof, output$pamCluster),
+                     FUN=length)
+  
+  ggplot(grouped2, aes(fill=Group.1, y=pamCluster, x=Group.2)) + 
+    geom_bar(position="dodge", stat="identity") +
+    xlab("Roof Material") +
+    ylab("Count") +
+    ggtitle("title3")
+  }
+```
+
+
 
 ```{r run_kmeans, message=FALSE, warning=FALSE}
 path <- '/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/data'
