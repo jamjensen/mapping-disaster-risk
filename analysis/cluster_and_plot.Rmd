@@ -22,9 +22,7 @@ library(seriation)
 library(dendextend)
 ```
 
-
 ``` {r make matrix}
-
 # Read CSV
 roof_matrix <- read_csv(file.choose())
 head(roof_matrix)
@@ -87,16 +85,15 @@ run_kmeans <- function(roof_matrix, clusters, filename) {
 ```
 
 ```{r warning=FALSE, message=FALSE}
-run_hac <- function(roof_matrix, clusters, distance, method) {
+run_hac <- function(roof_matrix, clusters, distance, method, file) {
   ###This function runs the entire factor analysis algorithm ###
-  
-  
+
   # Scale
   roof_scaled <- roof_matrix %>% select(-roof) %>%
                                  scale() %>%
                                  dist(method=distance)
   hc_complete <- hclust(roof_scaled, method=method)
-  title5 <- paste("HAC:", basename(file), sep=" ")
+  title5 <- paste("HAC:", file, sep=" ")
   plot(hc_complete %>%
        as.dendrogram %>%
        set("branches_k_color", k=clusters),
@@ -112,7 +109,7 @@ run_hac <- function(roof_matrix, clusters, distance, method) {
                        FUN=length)
   colnames(grouped)[colnames(grouped)=="Group.2"] <- "Cluster"
   actual_label_count <-table(roof_matrix$roof)
-  title3 <- paste("HAC Comparison to Actual Labels:", basename(file), sep=" ")
+  title3 <- paste("HAC Comparison to Actual Labels:", file, sep=" ")
   bar <- ggplot(grouped, aes(fill=Cluster, y=K_Cluster, x=Group.1)) + 
                 geom_bar(position="dodge", stat="identity") +
                 xlab("Roof Material") +
@@ -120,31 +117,20 @@ run_hac <- function(roof_matrix, clusters, distance, method) {
                 ggtitle(title3)
   plot(bar)
   
-}
-```
-
-```{r DBSCAN, message=FALSE, warning=FALSE}
-run_DBSCAN <- function(roof, eps, minpts, file) {
+  # Plot the inverse
+  bar1 <- ggplot(grouped, aes(fill=Group.1, y=K_Cluster, x=Cluster)) + 
+  geom_bar(position="dodge", stat="identity") +
+  xlab("Cluster") +
+  ylab("Count") +
+  ggtitle("Group by Cluster")
   
-  d <- dbscan(roof, eps=eps, Minpts=minpts)
-  print(d)
+  plot(bar1)
 }
-```
-
-```{r}
-# First define eps
-roof <- roof_matrix %>% select(-roof) %>%
-                        scale()
-# Determine best eps
-kNNdistplot(roof, k=3)
-# Note: MinPts = k above
-run_DBSCAN(roof, eps=55, MinPts=100, "mixco_1_and_ebenezer_gcf")
 ```
 
 ```{r k-medoids, message=FALSE, warning=FALSE}
-
 run_PAM <- function(roof_matrix, clusters, name) {
-  
+  ## This function runs the entire PAM algorithm ##
   roof_scaled <- roof_matrix %>% 
     select(-roof) %>%
     scale()
@@ -165,30 +151,27 @@ run_PAM <- function(roof_matrix, clusters, name) {
   }
 ```
 
-
-
-```{r run_kmeans, message=FALSE, warning=FALSE}
-path <- '/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/data'
-files <- list.files(path=path, pattern="*.csv", full.names=TRUE, recursive=FALSE)
-
-for (f in files) {
-  run_kmeans(f, 5)
+```{r DBSCAN, message=FALSE, warning=FALSE}
+run_DBSCAN <- function(roof, eps, minpts, file) {
+  d <- dbscan(roof, eps=eps, Minpts=minpts)
+  print(d)
 }
-
-run_kmeans(roof_matrix, 4, "mixco_1_and_ebenezer_gcf")
 ```
 
 ```{r}
-run_kmeans(roof_matrix, 2, "mixco_1_and_ebenezer_gcf")
+# First define eps
+roof <- roof_matrix %>% select(-roof) %>%
+                        scale()
+# Determine best eps
+kNNdistplot(roof, k=3)
+# Note: MinPts = k above
+run_DBSCAN(roof, eps=55, MinPts=100, "mixco_1_and_ebenezer_gcf")
 ```
 
-
-
-```{r run_factoranalysis, message=FALSE, warning=FALSE}
-for (f in files) {
-  run_hac(f, 5, distance="canberra", method="complete")
-}
-
+```{r results, message=FALSE, warning=FALSE}
+run_kmeans(roof_matrix, 2, "mixco_1_and_ebenezer_gcf")
+run_kmeans(roof_matrix, 2, "mixco_1_and_ebenezer_gcf")
 run_kmeans(roof_matrix, 4, "zonal_test")
+run_hac(roof_matrix, 4, distance="canberra", method="complete", file="mixco_1_and_ebenezer_full")
 ```
 
