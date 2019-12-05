@@ -44,6 +44,7 @@ def go(args):
                 continue
             if args.fourier:
                 dft_shift, magnitude_spectrum = fourier_transform.fourier_transform(img)
+            if args.mask:
                 mask = fourier_transform.create_band_pass_filter(img)
                 fshift_mask_mag, img = fourier_transform.apply_mask_and_inverse_DFT(dft_shift, mask)
             if args.zonal:
@@ -57,7 +58,10 @@ def go(args):
             if args.flatten:
                 label = []
                 features = []
-                flat = img.flatten()
+                if args.mask:
+                    flat = magnitude_spectrum.flatten()
+                else:
+                    flat = img.flatten()
                 label.append(polygon['roof_material'])
                 features.append(flat)
                 df = pd.DataFrame(features, label)
@@ -84,7 +88,8 @@ if __name__ == "__main__":
     argparser.add_argument('--fourier', action='store_true', help='conduct fourier transformation')
     argparser.add_argument('-l', '--limit', type=int, default=1, help='Set limit to number of roofs')
     argparser.add_argument('-c', '--csv', action='store', dest='csv', help='Name of the stored csv')
-
+    argparser.add_argument('--mask', action='store_true', help='Add filter to FFT')
+    
     args = argparser.parse_args()
 
     go(args)
