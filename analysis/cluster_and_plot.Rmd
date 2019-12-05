@@ -22,22 +22,37 @@ library(seriation)
 library(dendextend)
 ```
 
+
+``` {r make matrix}
+
+# Read CSV
+roof_matrix <- read_csv(file.choose())
+head(roof_matrix)
+roof_matrix <- select(roof_matrix,-c(X1))
+# Rename first column if necesary
+if (colnames(roof_matrix)[1] != "roof") {
+roof_matrix <- roof_matrix %>% rename(roof = X1)
+}
+
+# Read CSV
+roof_matrix <- read_csv(file)
+# Rename first column if necesary
+if (colnames(roof_matrix)[1] != "roof") {
+roof_matrix <- roof_matrix %>% rename(roof = X1)
+}
+
+```
+
 ```{r kmeans, message=FALSE, warning=FALSE}
-run_kmeans <- function(file, clusters) {
+run_kmeans <- function(roof_matrix, clusters, filename) {
   ###This function runs the entire k-means algorithm ###
   
-  # Read CSV
-  roof_matrix <- read_csv(file)
-  # Rename first column if necesary
-  if (colnames(roof_matrix)[1] != "roof") {
-  roof_matrix <- roof_matrix %>% rename(roof = X1)
-  }
   # Scale and find covariance matrix
   roof_scaled <- roof_matrix %>% select(-roof) %>%
                                  scale()
   dist_can <- roof_scaled %>% dist(method="canberra")
   # Plot ODI
-  title1 <- paste("ODI:", basename(file), sep=" ")
+  title1 <- paste("ODI:", filename, sep=" ")
   viz <- fviz_dist(dist_can,
                    show_labels = FALSE,
                    gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07")) +
@@ -49,7 +64,7 @@ run_kmeans <- function(file, clusters) {
   output <- roof_matrix %>% select(roof)
   output$K_Cluster <- as.factor(k2$cluster)
   k_title <- paste("K = ", clusters, sep="")
-  title2 <- paste(k_title, basename(file), sep=" ")
+  title2 <- paste(k_title, filename, sep=" ")
   group <- fviz_cluster(k2, geom = "point", data = roof_scaled) +
            ggtitle(title2)
   plot(group)
@@ -60,26 +75,28 @@ run_kmeans <- function(file, clusters) {
                        FUN=length)
   colnames(grouped)[colnames(grouped)=="Group.2"] <- "Cluster"
   actual_label_count <-table(roof_matrix$roof)
-  title3 <- paste("Comparison to actual labels:", basename(file), sep=" ")
+  title3 <- paste("Comparison to actual labels:", filename, sep=" ")
   bar <- ggplot(grouped, aes(fill=Cluster, y=K_Cluster, x=Group.1)) + 
                 geom_bar(position="dodge", stat="identity") +
                 xlab("Roof Material") +
                 ylab("Count") +
                 ggtitle(title3)
   plot(bar)
+  
+  bar1 <- ggplot(grouped, aes(fill=Group.1, y=K_Cluster, x=Cluster)) + 
+    geom_bar(position="dodge", stat="identity") +
+    xlab("Cluster") +
+    ylab("Count") +
+    ggtitle("Group by Cluster")
+  
+  plot(bar1)
 }
 ```
 
 ```{r warning=FALSE, message=FALSE}
-run_hac <- function(file, clusters, distance, method) {
+run_hac <- function(roof_matrix, clusters, distance, method) {
   ###This function runs the entire factor analysis algorithm ###
   
-  # Read CSV
-  roof_matrix <- read_csv(file)
-  # Rename first column if necesary
-  if (colnames(roof_matrix)[1] != "roof") {
-  roof_matrix <- roof_matrix %>% rename(roof = X1)
-  }
   
   # Scale
   roof_scaled <- roof_matrix %>% select(-roof) %>%
@@ -109,6 +126,7 @@ run_hac <- function(file, clusters, distance, method) {
                 ylab("Count") +
                 ggtitle(title3)
   plot(bar)
+  
 }
 ```
 
@@ -120,11 +138,15 @@ files <- list.files(path=path, pattern="*.csv", full.names=TRUE, recursive=FALSE
 for (f in files) {
   run_kmeans(f, 5)
 }
+
+run_kmeans(roof_matrix, 4, "zonal_test")
 ```
 
 ```{r run_factoranalysis, message=FALSE, warning=FALSE}
 for (f in files) {
   run_hac(f, 5, distance="canberra", method="complete")
 }
+
+run_kmeans(roof_matrix, 4, "zonal_test")
 ```
 
