@@ -94,6 +94,37 @@ def create_band_pass_filter(img):
 
     return mask
 
+def create_high_pass_filter(img):
+
+    # Circular HPF mask, center circle is 0, remaining all ones
+    rows, cols = img.shape
+    crow, ccol = int(rows / 2), int(cols / 2)
+
+    mask = np.ones((rows, cols, 2), np.uint8)
+    r = 10
+    center = [crow, ccol]
+    x, y = np.ogrid[:rows, :cols]
+    mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= r*r
+    mask[mask_area] = 0
+    print('HIGH PASS FILTER r')
+
+    return mask
+
+def create_low_pass_filter(img):
+
+    rows, cols = img.shape
+    crow, ccol = int(rows / 2), int(cols / 2)
+
+    mask = np.zeros((rows, cols, 2), np.uint8)
+    r = 5
+    center = [crow, ccol]
+    x, y = np.ogrid[:rows, :cols]
+    mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= r*r
+    mask[mask_area] = 1
+    print('LOW PASS FILTER')
+
+    return mask
+
 
 def apply_mask_and_inverse_DFT(dft_shift, mask):
     '''
@@ -126,8 +157,14 @@ def print_transformation_single_rooftop():
     crop = read_image(IMAGE_PATH)
 
     dft_shift, magnitude_spectrum = fourier_transform(crop)
-    mask = create_band_pass_filter(crop)
-    fshift_mask_mag, img_back = apply_mask_and_inverse_DFT(dft_shift, mask) 
+    #mask = create_band_pass_filter(crop)
+    mask = create_high_pass_filter(crop)
+    #mask = create_low_pass_filter(crop)
+
+    fshift_mask_mag, img_back = apply_mask_and_inverse_DFT(dft_shift, mask)
+
+    #img_back = image_segmentation.crop_center(img_back, 60, 60)
+    print(magnitude_spectrum)
 
     plt.subplot(2, 2, 1), plt.imshow(crop, cmap='gray')
     plt.title('Input Image'), plt.xticks([]), plt.yticks([])
@@ -137,10 +174,12 @@ def print_transformation_single_rooftop():
     plt.title('FFT + Mask'), plt.xticks([]), plt.yticks([])
     plt.subplot(2, 2, 4), plt.imshow(img_back, cmap='gray')
     plt.title('After FFT Inverse'), plt.xticks([]), plt.yticks([])
+
+    print(img_back)
     plt.show()
 
 
-def go_multiple(limit=1):
+def go_multiple(limit=1,mask_filter=False):
 
     ''' 
     Applies FFT transformation to given number of cropped roofs, flattens them,
@@ -164,11 +203,14 @@ def go_multiple(limit=1):
                 crop = image_segmentation.crop_center(gray, 60, 60)
                 if (np.count_nonzero(crop) / crop.size) > .90:
                     dft_shift, magnitude_spectrum = fourier_transform(crop)
-                    mask = create_band_pass_filter(crop)
-                    fshift_mask_mag, img_back = apply_mask_and_inverse_DFT(dft_shift, mask) 
-
-                    # Flatten
-                    flat = img_back.flatten()
+                    if mask_filter:
+                        mask = create_band_pass_filter(crop)
+                        fshift_mask_mag, img_back = apply_mask_and_inverse_DFT(dft_shift, mask) 
+                    # Flatten                        
+                        flat = img_back.flatten()
+                    else:
+                        flat = magnitude_spectrum.flatten()    
+                    
                     label.append(polygon['roof_material'])
                     features.append(flat)
                 else:
