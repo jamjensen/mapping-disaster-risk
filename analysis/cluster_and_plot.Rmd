@@ -26,7 +26,6 @@ library(dendextend)
 # Read CSV
 roof_matrix <- read_csv(file.choose())
 head(roof_matrix)
-roof_matrix <- select(roof_matrix,-c(X1))
 # Rename first column if necesary
 if (colnames(roof_matrix)[1] != "roof") {
 roof_matrix <- roof_matrix %>% rename(roof = X1)
@@ -169,7 +168,7 @@ run_DBSCAN(roof, eps=55, MinPts=100, "mixco_1_and_ebenezer_gcf")
 ```
 
 ```{r results, message=FALSE, warning=FALSE}
-run_kmeans(roof_matrix, 2, "mixco_1_and_ebenezer_gcf")
+run_kmeans(roof_matrix, 2, "guatemala_full_100")
 run_kmeans(roof_matrix, 2, "mixco_1_and_ebenezer_gcf")
 run_kmeans(roof_matrix, 4, "zonal_test")
 run_hac(roof_matrix, 4, distance="canberra", method="complete", file="mixco_1_and_ebenezer_full")
