@@ -29,16 +29,24 @@ def go(args):
         if i < args.limit:
             polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
             img = raster_brick.get_rooftop_array_after_mask(f.fpath_tiff, polygon, proj)
-            if img is None: #check from fourier_transform.py line 162
+            # Invalid input checks
+            if img is None:
                 continue
+            if img.size < (args.pixels * args.pixels):
+                continue
+            # Crop image when > 1 layer
+            if args.crop_multiple:
+                img = image_segmentation.crop_multi_bands(img, args.pixels, args.pixels)
+            # Self-organizing map feature reduction
+            if args.SOM:
+                img = image_segmentation.SOM(img=img)
             # Convert to gray
             if args.grayscale:
                 img = (img[0] * 0.299) + (img[1] * 0.587) + (img[2] * 0.144)
             # Crop image down
             if args.crop_single:
                 img = image_segmentation.crop_center(img, args.pixels, args.pixels)
-            if args.crop_multiple:
-                img = image_segmentation.crop_multi_bands(img, args.pixels, args.pixels)
+            # Excess whitespace check
             if (np.count_nonzero(img) / img.size) < .90:
                 outliers += 1
                 continue
@@ -89,7 +97,8 @@ if __name__ == "__main__":
     argparser.add_argument('-l', '--limit', type=int, default=1, help='Set limit to number of roofs')
     argparser.add_argument('-c', '--csv', action='store', dest='csv', help='Name of the stored csv')
     argparser.add_argument('--mask', action='store_true', help='Add filter to FFT')
-    
+    argparser.add_argument('--SOM', action='store_true', help='implement a self-organizing map')
+
     args = argparser.parse_args()
 
     go(args)

@@ -11,11 +11,14 @@ import rasterio
 from matplotlib import pyplot as plt
 from rasterio.plot import show as s
 from skimage.io import imread, imshow
+from sklearn.preprocessing import StandardScaler
+from minisom import MiniSom
 import raster_brick
 import raster_bands
 import file_names as f
 import cv2
 import os
+
 
 tif_path = f.fpath_tiff
 proj = Proj(init=f.crs)
@@ -104,6 +107,31 @@ def loop_and_print(how_many, grid_rows, grid_cols):
             continue
     
     return outliers
+
+
+def SOM(img, sqrt_desired_colors=3, sigma=0.1, learning_rate=0.2):
+    '''
+    Implements self-organizing maps for feature detection and color
+    quantization.
+
+    Inputs:
+        img (array): numpy array/matrix containing one or more layers
+        sqrt_desired_colors (int): sqrt of the desired number of colors in
+                                   output
+        sigma (float): radius of neighbors in the SOM
+        learning_Rate (float): learning rate of the SOM
+    '''
+    layers, rows, cols = img.shape
+    pixels = np.reshape(img, (3, img.shape[1] * img.shape[2]))
+    standardized_data = StandardScaler().fit_transform(pixels.T)
+    som = MiniSom(sqrt_desired_colors, sqrt_desired_colors,
+                  layers, sigma, learning_rate)
+    som.random_weights_init(standardized_data)
+    som.train_random(standardized_data, 100)
+    qnt = som.quantization(standardized_data)
+    new_img = qnt.T.reshape(3, rows, cols)
+
+    return new_img
 
 
 # Step 4) Loop through all tiffs, process, and include in a dataframe

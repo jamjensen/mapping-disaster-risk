@@ -24,7 +24,7 @@ def go(width=3, height=3, layers=3, sigma=0.1, learning_rate=0.2, limit=10):
             # For now, get an image, and perform grayscale/crop/flatten
             polygon['coordinates'] = raster_brick.transform_coordinates(polygon['coordinates'], proj)
             img = raster_brick.get_rooftop_array_after_mask(f.fpath_tiff, polygon, proj)
-            if img:
+            if img is not None:
                 img = image_segmentation.crop_multi_bands(img, 60, 60)
                 pixels = np.reshape(img, (3, img.shape[1] * img.shape[2]))
                 standardized_data = StandardScaler().fit_transform(pixels.T)
@@ -46,6 +46,25 @@ def go(width=3, height=3, layers=3, sigma=0.1, learning_rate=0.2, limit=10):
                 else:
                     outliers +=1
 
-    rv.to_csv('guatemala_3layer_alldata.csv')
+    rv.to_csv('guatemala_3layer_1000.csv')
     return outliers
+
+def SOM(img=img, rows=60, cols=60, width=3, height=3, layers=3, sigma=0.1, learning_rate=0.2):
+
+    pixels = np.reshape(img, (3, img.shape[1] * img.shape[2]))
+    standardized_data = StandardScaler().fit_transform(pixels.T)
+    som = MiniSom(width, height, layers, sigma, learning_rate)
+    som.random_weights_init(standardized_data)
+    som.train_random(standardized_data, 100)
+    qnt = som.quantization(standardized_data)
+    new_img = qnt.T.reshape(3,60,60)
+
+    return new_img
+
+
+
+
+
+
+
 
