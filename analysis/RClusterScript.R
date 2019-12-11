@@ -13,7 +13,7 @@ p_load(dendextend)
 p_load(argparse)
 
 
-setwd("/home/jamesjensen")
+#setwd("/home/jamesjensen")
 print("TESTTTT")
 
 parser <- ArgumentParser()
@@ -22,7 +22,7 @@ parser$add_argument('-d', '--dir', action="store", dest='dir', help='home for al
 args <- parser$parse_args()
 
 
-main_dir <- "/home/jamesjensen/"
+main_dir <- "/home/jamesjensen/scratch-midway2/zonal/"
 sub_dir <- args$dir
 output_dir <- file.path(main_dir, sub_dir)
 
@@ -39,9 +39,9 @@ if (colnames(roof_matrix)[1] != "roof") {
   roof_matrix <- roof_matrix %>% rename(roof = X1)
 }
 roof_matrix <- roof_matrix[complete.cases(roof_matrix), ]
-print(head(roof_matrix))
+#print(head(roof_matrix))
 
-roof_matrix <- head(roof_matrix)
+#roof_matrix <- head(roof_matrix)
 setwd(output_dir)
 
 run_kmeans <- function(roof_matrix, clusters, filename) {
@@ -82,7 +82,7 @@ run_kmeans <- function(roof_matrix, clusters, filename) {
     xlab("Roof Material") +
     ylab("Count") +
     ggtitle(title3)
-  ggsave(filename="bar.png", plot=bar)
+  ggsave(filename="kmeans_bar_xlab_roof.png", plot=bar)
   
   bar1 <- ggplot(grouped, aes(fill=Group.1, y=K_Cluster, x=Cluster)) + 
     geom_bar(position="dodge", stat="identity") +
@@ -90,7 +90,7 @@ run_kmeans <- function(roof_matrix, clusters, filename) {
     ylab("Count") +
     ggtitle("Group by Cluster")
   
-  ggsave(filename="bar1.png", plot=bar1)
+  ggsave(filename="Kmeans_bar_xlab_cluster.png", plot=bar1)
   
   healthy <- c("concrete_cement", "healthy_metal")
   unhealthy <- c("irregular_metal", "other", "incomplete")
@@ -100,7 +100,7 @@ run_kmeans <- function(roof_matrix, clusters, filename) {
     rename('status' = 'Group.1', 'cluster' = 'Group.2', 'count' = 'roof')
   output <- output %>% group_by(cluster) %>% mutate(percent = (count/sum(count) * 100))
   
-  write.csv(data.frame(output))
+  write.csv(data.frame(output), file="kmeans_results.csv")
 }
 
 
@@ -155,7 +155,7 @@ run_hac <- function(roof_matrix, clusters, distance, method, file) {
     rename('status' = 'Group.1', 'cluster' = 'Group.2', 'count' = 'roof')
   output <- output %>% group_by(cluster) %>% mutate(percent = (count/sum(count) * 100))
   
-  write.csv(output)
+  write.csv(data.frame(output), file="hac_results.csv")
 }
 
 run_PAM <- function(roof_matrix, clusters, name) {
@@ -176,10 +176,22 @@ run_PAM <- function(roof_matrix, clusters, name) {
     geom_bar(position="dodge", stat="identity") +
     xlab("Roof Material") +
     ylab("Count") +
-    ggtitle("title3")
+    ggtitle(name)
   ggsave(filename="pam_plt", plot=pam_plt)
+  
+  healthy <- c("concrete_cement", "healthy_metal")
+  unhealthy <- c("irregular_metal", "other", "incomplete")
+  output <- output %>% mutate(status = ifelse(roof %in% healthy, "healthy", "unhealthy"))
+  output <- output %>% aggregate(by=list(output$status, output$K_Cluster), FUN=length) %>%
+    select(Group.1, Group.2, roof) %>%
+    rename('status' = 'Group.1', 'cluster' = 'Group.2', 'count' = 'roof')
+  output <- output %>% group_by(cluster) %>% mutate(percent = (count/sum(count) * 100))
+  
+  write.csv(data.frame(output), file="pam_results.csv")
 }
 
-run_kmeans(roof_matrix, 2, "castries_test")
+run_kmeans(roof_matrix, 2, "zonal_k2")
+run_hac(roof_matrix, 2, distance="canberra", method="complete","zonal_hac2")
+run_PAM(roof_matrix, 2, "zonal_pam2")
 
 
