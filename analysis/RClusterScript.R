@@ -1,20 +1,19 @@
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(factoextra)
-library(readr)
-library(clustertend)
-library(psych)
-library(fpc)
-library(dbscan)
-library(gridExtra)
-library(seriation)
-library(dendextend)
 library(pacman)
-p_load("argparse")
+p_load(ggplot2)
+p_load(dplyr)
+p_load(tidyr)
+p_load(factoextra)
+p_load(readr)
+p_load(clustertend)
+p_load(psych)
+p_load(fpc)
+p_load(gridExtra)
+p_load(seriation)
+p_load(dendextend)
+p_load(argparse)
 
 
-setwd("/Users/jamesjensen/Documents/harris/q1_20/UML/Project/mapping-disaster-risk/data")
+setwd("/home/jamesjensen")
 print("TESTTTT")
 
 parser <- ArgumentParser()
@@ -23,7 +22,7 @@ parser$add_argument('-d', '--dir', action="store", dest='dir', help='home for al
 args <- parser$parse_args()
 
 
-main_dir <- "/Users/jamesjensen/Documents/harris/q1_20/UML/Project/mapping-disaster-risk/"
+main_dir <- "/home/jamesjensen/"
 sub_dir <- args$dir
 output_dir <- file.path(main_dir, sub_dir)
 
@@ -181,6 +180,6 @@ run_PAM <- function(roof_matrix, clusters, name) {
   ggsave(filename="pam_plt", plot=pam_plt)
 }
 
-run_kmeans(roof_matrix, 2, "zonal_100")
+run_kmeans(roof_matrix, 2, "castries_test")
 
 
