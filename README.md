@@ -30,7 +30,7 @@ raster_brick.py: takes crs projection and polygon coordinates to extract out a s
 
 
 #### Test Data
-Several smaller datasets -- containing 400 or fewer processed roofs -- can be found in the data folder. They are examples of both flattened and zonal datasets, which can be passed to our clustering algorithms. 
+Several smaller datasets -- containing 400 or fewer processed roofs -- can be found in the `data/` folder. There are examples of both flattened and zonal datasets, which can be passed to our clustering algorithms.
 
 
 ### Analysis
