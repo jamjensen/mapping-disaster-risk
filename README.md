@@ -2,7 +2,7 @@
 MACS 40800: Unsupervised Machine Learning 
 
 ## About
-This analysis was conducted by Tamara Glazer and James Jensen for the Unsupervised Machine Learning course at the University of Chicago. This study uses data provided by [DrivenData](https://www.drivendata.org/competitions/58/disaster-response-roof-type/data/), an organization working at the intersection of data science and social impact. Finally, the authors benefited greatly from computing resources made available by the [RCC](https://rcc.uchicago.edu/resources) at the University of Chicago. Through these resources, they were able to use of host the tif files, generate the datasets, and cluster the satellite images by rooftop material.
+This analysis was conducted by Tamara Glazer and James Jensen for the Unsupervised Machine Learning course at the University of Chicago. This study uses data provided by [DrivenData](https://www.drivendata.org/competitions/58/disaster-response-roof-type/data/), an organization working at the intersection of data science and social impact. The authors benefited greatly from computing resources made available by the [RCC](https://rcc.uchicago.edu/resources) at the University of Chicago. With the use of these resources, they were able to properly store, compare, and cluster satellite images by rooftop material across all seven TIF files present in the dataset. 
 
 ### Setup
 This project assumes the use of Python 3.7+ and R 3.6+
