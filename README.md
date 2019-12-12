@@ -18,7 +18,7 @@ The data consists of seven tif files, two from Guatemala, two from Colombia, and
 ```
 fourier_transform.py: handles all input image fourier transformations
 
-image_segmetnation.py: crops images to a set number of pixels and implements self-organizing maps for feature detection and color quantization.
+image_segmentation.py: crops images to a set number of pixels and implements self-organizing maps for feature detection and color quantization.
 
 raster_brick.py: takes crs projection and polygon coordinates to extract out a single rooftop
 ```
