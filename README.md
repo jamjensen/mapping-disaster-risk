@@ -37,7 +37,7 @@ The primary analysis script can be found in `analysis/`. Passing a dataset throu
 
 This R script takes two parameters: (1) the path to the input csv and (2) the location to save the plots and tables.
 
-* To run the analysis script: `Rscript RClusterScript.R --input --output 
+* To run the analysis script: `Rscript RClusterScript.R --input --output`
 
 
 
