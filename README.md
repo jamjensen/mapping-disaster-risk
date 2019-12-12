@@ -2,13 +2,13 @@
 MACS 40800: Unsupervised Machine Learning 
 
 ## About
-This analysis was conducted by Tamara Glazer and James Jensen for the Unsupervised Machine Learning course at the University of Chicago. This study uses data provided by DrivenData, an organization working at the intersection of data science and social impact. 
+This analysis was conducted by Tamara Glazer and James Jensen for the Unsupervised Machine Learning course at the University of Chicago. This study uses data provided by [DrivenData](https://www.drivendata.org/competitions/58/disaster-response-roof-type/data/), an organization working at the intersection of data science and social impact. Finally, the authors benefited greatly from computing resources made available by the [RCC](https://rcc.uchicago.edu/resources) at the University of Chicago. Through these resources, they were able to use of host the tif files, generate the datasets, and cluster the satellite images by rooftop material.
 
 ### Setup
 This project assumes the use of Python 3.7+ and R 3.6+
 
 * Run `pip install -requirements.txt` in the top level of the repository
-* Run `install.packages("pacman")`. All additional packages will use pacman to load and install, if oyou do not already have them. 
+* Run `install.packages("pacman")`. All additional packages will use pacman to install and load, if you do not already have them. 
 * In total the tif files are over 35 GB, however, they are cloud optimzed. We recommend hosting them or downloading and working with a single file at a time. 
 
 ### Data Processing
@@ -23,8 +23,10 @@ image_segmetnation.py: crops images to a set number of pixels and implements sel
 raster_brick.py: takes crs projection and polygon coordinates to extract out a single rooftop
 ```
 
-* You can view all possible dataset manipulations using `python3 main_process.py --help`
-* Call `python3 main_process.py --grayscale --crop_single --flatten` to transform all of the roofs to grayscale, crop a 60x60 pixel squre from the center each roof, then create an nx3600 dataset, where n is the number of roofs and 3600 represents each pixel in the cropped roof. 
+* Start in `processing/`
+* View all possible dataset manipulations using `python3 main_process.py --help`
+* Run `python3 main_process.py` with desired transformations
+    * For example, run `python3 main_process.py --grayscale --crop_single --flatten` to transform all of the roofs to grayscale, crop a 60x60 pixel squre from the center each roof, then create an nx3600 dataset, where n is the number of roofs and 3600 represents each pixel in the cropped roof. 
 
 
 #### Test Data
@@ -33,13 +35,13 @@ Several smaller datasets -- containing 400 or fewer processed roofs -- can be fo
 
 ### Analysis
 
-The primary analysis script can be found in `analysis/`. Passing a dataset through this script will make use of the K-means, PAM, and Hierarchical Agglomerative Clustering algoritms. The output of this script will contain plots for each clustering method as well as csv files that display how the unsupervised methods compared to the actual labels. 
+The primary analysis script can be found in `analysis/`. Passing a dataset through this script will make use of the K-means, PAM, and Hierarchical Agglomerative Clustering algoritms. The output of this script will contain plots for each clustering method as well as csv files that display how the unsupervised methods compared to the actual labels. The results from our analysis can be found in `results/`.
 
 This R script takes two parameters: (1) the path to the input csv and (2) the location to save the plots and tables.
 
 * To run the analysis script: `Rscript RClusterScript.R --input --output`
 
-We've also included the R Notebook --  `cluster_and_plot.Rmd` -- that, for a given dataset, walks through the process of  generating a feature matrix, passing it through the K-means, PAM, and Hierarchical Clustering Algorithms. 
+We've also included the R Notebook --  `cluster_and_plot.Rmd` -- that, for a given dataset, walks through the process of  generating a feature matrix, passing it through the K-means, PAM, and Hierarchical Clustering Algorithms, and rendering the output. 
 
 
 
