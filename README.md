@@ -39,6 +39,8 @@ This R script takes two parameters: (1) the path to the input csv and (2) the lo
 
 * To run the analysis script: `Rscript RClusterScript.R --input --output`
 
+We've also included the R Notebook --  `cluster_and_plot.Rmd` -- that, for a given dataset, walks through the process of  generating a feature matrix, passing it through the K-means, PAM, and Hierarchical Clustering Algorithms. 
+
 
 
 
