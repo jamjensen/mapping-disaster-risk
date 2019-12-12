@@ -11,10 +11,12 @@ p_load(gridExtra)
 p_load(seriation)
 p_load(dendextend)
 p_load(argparse)
+# p_load(cluster)
 
 
-#setwd("/home/jamesjensen")
-print("TESTTTT")
+#setwd("/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/analysis")
+setwd("/home/jamesjensen")
+print("TEST")
 
 parser <- ArgumentParser()
 parser$add_argument('-i', '--input', action="store", dest='input', help='that csv')
@@ -22,7 +24,9 @@ parser$add_argument('-d', '--dir', action="store", dest='dir', help='home for al
 args <- parser$parse_args()
 
 
-main_dir <- "/home/jamesjensen/scratch-midway2/zonal/"
+#main_dir <- "/Users/Tammy/Documents/_MSCAPP/Fall 2019/Unsupervised ML/Final Project/mapping-disaster-risk/analysis"
+main_dir <- "/home/jamesjensen/scratch-midway2/gcf_fourier_mask/"
+
 sub_dir <- args$dir
 output_dir <- file.path(main_dir, sub_dir)
 
@@ -50,15 +54,15 @@ run_kmeans <- function(roof_matrix, clusters, filename) {
   # Scale and find covariance matrix
   roof_scaled <- roof_matrix %>% select(-roof) %>%
     scale()
-  dist_can <- roof_scaled %>% dist(method="canberra")
+  #dist_can <- roof_scaled %>% dist(method="canberra")
   # Plot ODI
-  title1 <- paste("ODI:", filename, sep=" ")
-  viz <- fviz_dist(dist_can,
-                   show_labels = FALSE,
-                   gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07")) +
-    ggtitle(title1)
-  #plot(viz)
-  ggsave(filename="viz.png", plot=viz)
+  #title1 <- paste("ODI:", filename, sep=" ")
+  #viz <- fviz_dist(dist_can,
+  #                 show_labels = FALSE,
+  #                 gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07")) +
+  #  ggtitle(title1)
+  #  plot(viz)
+  #  ggsave(filename="viz.png", plot=viz)
   
   # K-means
   k2 <- kmeans(roof_scaled, centers=clusters, nstart = 15)
@@ -113,12 +117,12 @@ run_hac <- function(roof_matrix, clusters, distance, method, file) {
     dist(method=distance)
   hc_complete <- hclust(roof_scaled, method=method)
   title5 <- paste("HAC:", file, sep=" ")
-  den <- plot(hc_complete %>%
-         as.dendrogram %>%
-         set("branches_k_color", k=clusters),
-       leaflab="none",
-       main = title5)
-  ggsave(filename="dend.png",plot=den)
+  #den <- plot(hc_complete %>%
+  #       as.dendrogram %>%
+  #       set("branches_k_color", k=clusters),
+  #     leaflab="none",
+  #     main = title5)
+  # ggsave(filename="dend.png",plot=den)
   
   # Cut the tree at k=5
   cut <- cutree(hc_complete, k=clusters)
@@ -158,40 +162,42 @@ run_hac <- function(roof_matrix, clusters, distance, method, file) {
   write.csv(data.frame(output), file="hac_results.csv")
 }
 
-run_PAM <- function(roof_matrix, clusters, name) {
-  ## This function runs the entire PAM algorithm ##
-  roof_scaled <- roof_matrix %>% 
-    select(-roof) %>%
-    scale()
-  
-  PAM <- pam(roof_scaled,
-             k=clusters)
-  output <- roof_matrix %>% select(roof)
-  output$pamCluster <- as.factor(PAM$cluster)
-  grouped <- aggregate(output,
-                       by=list(output$roof, output$pamCluster),
-                       FUN=length)
-  
-  pam_plt <-ggplot(grouped2, aes(fill=Group.1, y=pamCluster, x=Group.2)) + 
-    geom_bar(position="dodge", stat="identity") +
-    xlab("Roof Material") +
-    ylab("Count") +
-    ggtitle(name)
-  ggsave(filename="pam_plt", plot=pam_plt)
-  
-  healthy <- c("concrete_cement", "healthy_metal")
-  unhealthy <- c("irregular_metal", "other", "incomplete")
-  output <- output %>% mutate(status = ifelse(roof %in% healthy, "healthy", "unhealthy"))
-  output <- output %>% aggregate(by=list(output$status, output$K_Cluster), FUN=length) %>%
-    select(Group.1, Group.2, roof) %>%
-    rename('status' = 'Group.1', 'cluster' = 'Group.2', 'count' = 'roof')
-  output <- output %>% group_by(cluster) %>% mutate(percent = (count/sum(count) * 100))
-  
-  write.csv(data.frame(output), file="pam_results.csv")
-}
 
-run_kmeans(roof_matrix, 2, "zonal_k2")
-run_hac(roof_matrix, 2, distance="canberra", method="complete","zonal_hac2")
-run_PAM(roof_matrix, 2, "zonal_pam2")
+#run_PAM <- function(roof_matrix, clusters, name) {
+  ## This function runs the entire PAM algorithm ##
+#  roof_scaled <- roof_matrix %>% 
+#    select(-roof) %>%
+#    scale()
+  
+#  PAM <- pam(roof_scaled,
+#             k=clusters)
+#  output <- roof_matrix %>% select(roof)
+#  output$pamCluster <- as.factor(PAM$cluster)
+#  grouped <- aggregate(output,
+#                       by=list(output$roof, output$pamCluster),
+#                       FUN=length)
+  
+#  pam_plt <-ggplot(grouped, aes(fill=Group.1, y=pamCluster, x=Group.2)) + 
+#    geom_bar(position="dodge", stat="identity") +
+#    xlab("Roof Material") +
+#    ylab("Count") +
+#    ggtitle(name)
+#  ggsave(filename="pam_plt.png", plot=pam_plt)
+  
+#  healthy <- c("concrete_cement", "healthy_metal")
+#  unhealthy <- c("irregular_metal", "other", "incomplete")
+#  output <- output %>% mutate(status = ifelse(roof %in% healthy, "healthy", "unhealthy"))
+#  output <- output %>% aggregate(by=list(output$status, output$K_Cluster), FUN=length) %>%
+#    select(Group.1, Group.2, roof) %>%
+#    rename('status' = 'Group.1', 'cluster' = 'Group.2', 'count' = 'roof')
+#  output <- output %>% group_by(cluster) %>% mutate(percent = (count/sum(count) * 100))
+
+#  write.csv(data.frame(output), file="pam_results.csv")
+#}
+
+
+run_kmeans(roof_matrix, 2, "gcf_fourier_mask_k2")
+#run_hac(roof_matrix, 2, distance="canberra", method="complete","gcf_fourier_mask_hac2")
+# run_PAM(roof_matrix, 2, "gcf_fourier_mask_pam2")
 
 
