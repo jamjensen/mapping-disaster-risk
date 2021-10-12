@@ -14,7 +14,7 @@ MiniSom==2.2.2
 munch==2.5.0
 networkx==2.4
 numpy==1.17.3
-opencv-python==4.1.1.26
+opencv-python==4.2.0.32
 pandas==0.25.2
 pickle-mixin==1.0.2
 Pillow==6.2.1
